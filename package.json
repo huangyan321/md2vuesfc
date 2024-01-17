@@ -1,0 +1,36 @@
+{
+  "name": "markvuepro",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/mark-vue-pro.umd.cjs",
+  "module": "./dist/mark-vue-pro.js",
+  "exports": {
+    ".": {
+      "import": "./dist/mark-vue-pro.js",
+      "require": "./dist/mark-vue-pro.umd.cjs"
+    }
+  },
+  "dependencies": {
+    "marked": "^11.1.1",
+    "vue": "^3.4.14"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "@vitejs/plugin-vue": "^4.6.2",
+    "terser": "^5.27.0",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.3.3",
+    "vite": "^5.0.11",
+    "vite-plugin-dts": "^3.7.1",
+    "vue-tsc": "^1.8.27"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc && vite build",
+    "preview": "vite preview"
+  }
+}
