@@ -66,9 +66,10 @@ export async function parser(mdi: MarkdownIt, code: string) {
     throw new Error(error.join('\n'));
   }
   const rewriteComponent = {
+    id,
     style: component.css,
-    script: transformScriptCode('anonymous.vue', component.js),
-    template: transformTemplateCode('anonymous.vue', component.template),
+    script: transformScriptCode(id, component.js),
+    template: transformTemplateCode(id, component.template),
   };
   return { rewriteComponent };
 }

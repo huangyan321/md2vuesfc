@@ -58,21 +58,19 @@ const insertStyles = (component: any) => {
   document.head.appendChild(styleTag);
 };
 const compose = (component: any) => {
-  if (!extendedWindow.__MarkVueModules__!['anonymous.vue']) {
-    extendedWindow.__MarkVueModules__!['anonymous.vue'] = {};
+  const id = component.id;
+  if (!extendedWindow.__MarkVueModules__![id]) {
+    extendedWindow.__MarkVueModules__![id] = {};
   }
   eval(component.script!);
   eval(component.template!);
   const scriptRet =
-    extendedWindow.__MarkVueModules__!['anonymous.vue']?.getScript?.(
-      props.context
-    ) || null;
+    extendedWindow.__MarkVueModules__![id]?.getScript?.(props.context) || null;
   const render =
-    extendedWindow.__MarkVueModules__!['anonymous.vue']?.getTemplate?.(
-      props.context
-    ) || null;
+    extendedWindow.__MarkVueModules__![id]?.getTemplate?.(props.context) ||
+    null;
   console.log({
-    __scopeId: `data-v-anonymous.vue`,
+    __scopeId: `data-v-${id}`,
     ...scriptRet,
     render,
   });
