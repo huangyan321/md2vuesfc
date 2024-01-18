@@ -31,6 +31,11 @@ export default defineConfig({
         // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
         globals: {
           vue: 'Vue',
+          'markdown-it': 'MarkDownIt',
+          '@vue/compiler-sfc': 'compilerSfc',
+          'hash-sum': 'hash-sum',
+          '@mdit-vue/plugin-sfc': 'pluginSfc',
+          '@mdit-vue/plugin-component': 'pluginComponent',
         },
       },
     },
