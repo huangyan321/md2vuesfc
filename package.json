@@ -1,6 +1,6 @@
 {
-  "name": "markvuepro",
-  "version": "0.0.1",
+  "name": "md2vuesfc",
+  "version": "0.0.2",
   "type": "module",
   "files": [
     "dist"
