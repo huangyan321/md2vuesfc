@@ -1,10 +1,14 @@
 <!-- @format -->
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { demoContent } from './demo';
+import MarkdownIt from 'markdown-it';
+const md = MarkdownIt({ html: true });
+</script>
 
 <template>
   <div>
-    <MarkVue></MarkVue>
+    <MarkVue :mdi="md" :content="demoContent"></MarkVue>
   </div>
 </template>
 

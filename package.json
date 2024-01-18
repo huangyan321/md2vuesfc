@@ -1,7 +1,7 @@
 {
   "name": "markvuepro",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "files": [
     "dist"
@@ -15,10 +15,14 @@
     }
   },
   "dependencies": {
-    "marked": "^11.1.1",
+    "@mdit-vue/plugin-component": "^2.0.0",
+    "@mdit-vue/plugin-sfc": "^2.0.0",
+    "@vue/compiler-sfc": "^3.4.14",
+    "markdown-it": "^14.0.0",
     "vue": "^3.4.14"
   },
   "devDependencies": {
+    "@types/markdown-it": "^13.0.7",
     "@types/node": "^20.11.5",
     "@vitejs/plugin-vue": "^4.6.2",
     "terser": "^5.27.0",
