@@ -5,8 +5,9 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/mark-vue-pro.umd.cjs",
-  "module": "./dist/mark-vue-pro.js",
+  "main": "dist/mark-vue-pro.umd.cjs",
+  "module": "dist/mark-vue-pro.js",
+  "types": "dist/mark-vue-pro.d.ts",
   "exports": {
     ".": {
       "import": "./dist/mark-vue-pro.js",
