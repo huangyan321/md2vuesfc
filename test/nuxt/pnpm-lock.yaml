@@ -4,6 +4,11 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+dependencies:
+  md2vuesfc:
+    specifier: link:C:/Users/vanweiping/Desktop/code/myproject/md2vuesfc
+    version: link:../..
+
 devDependencies:
   nuxt:
     specifier: ^3.9.3

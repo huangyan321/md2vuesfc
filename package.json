@@ -1,17 +1,27 @@
 {
   "name": "md2vuesfc",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "type": "module",
   "files": [
     "dist"
   ],
-  "main": "dist/mark-vue-pro.js",
-  "module": "dist/mark-vue-pro.js",
-  "types": "dist/mark-vue-pro.d.ts",
+  "main": "dist/md2vuesfc.js",
+  "module": "dist/md2vuesfc.js",
+  "types": "dist/md2vuesfc.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/mark-vue-pro.js",
-      "require": "./dist/mark-vue-pro.umd.cjs"
+      "types": "./dist/md2vuesfc.d.ts",
+      "import": "./dist/md2vuesfc.js"
+    },
+    "./style.css": "./dist/md2vuesfc.css",
+    "./dist/style.css": "./dist/md2vuesfc.css"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./dist/*",
+        "./*"
+      ]
     }
   },
   "dependencies": {

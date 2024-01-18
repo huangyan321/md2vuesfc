@@ -8,8 +8,9 @@ import {
   type CompilerOptions,
   type SFCDescriptor,
   type SFCTemplateCompileOptions,
+  type BindingMetadata,
 } from '@vue/compiler-sfc';
-import type { SfcBlock } from './transform';
+import type { SfcBlock } from './types/md';
 const COMP_IDENTIFIER = '__sfc__';
 export async function createVueSFCModule(
   sfcBlock: SfcBlock,
@@ -21,6 +22,8 @@ export async function createVueSFCModule(
     template: string;
   }
 ) {
+  const id = component.id;
+  const ssr = component.ssr;
   const sfc = concatModules(sfcBlock);
 
   const { descriptor } = parse(sfc);
@@ -103,11 +106,44 @@ export async function createVueSFCModule(
     component.template = '';
   }
 
+  if (descriptor.template && !descriptor.scriptSetup) {
+    const clientTemplateResult = doCompileTemplate(
+      descriptor,
+      id,
+      bindings,
+      false,
+      isTS
+    );
+    if (Array.isArray(clientTemplateResult)) {
+      return clientTemplateResult;
+    }
+    clientCode += `;${clientTemplateResult}`;
+    const ssrTemplateResult = doCompileTemplate(
+      descriptor,
+      id,
+      bindings,
+      true,
+      isTS
+    );
+    if (typeof ssrTemplateResult === 'string') {
+      // ssr compile failure is fine
+      ssrCode += `;${ssrTemplateResult}`;
+    } else {
+      ssrCode = `/* SSR compile error: ${ssrTemplateResult[0]} */`;
+    }
+  }
+
+  if (hasScoped) {
+    appendSharedCode(
+      `\n${COMP_IDENTIFIER}.__scopeId = ${JSON.stringify(`data-v-${id}`)}`
+    );
+  }
+
   let css = '';
 
   for (const style of descriptor.styles) {
     if (style.module) {
-      return [`<style module> is not supported in the playground.`];
+      return [`<style module> is not supported.`];
     }
 
     const styleResult = await compileStyleAsync({
@@ -144,6 +180,7 @@ export async function createVueSFCModule(
     component.js = clientCode.trimStart();
     component.ssr = ssrCode.trimStart();
   }
+  console.log(component);
 }
 function concatModules(sfcBlock: SfcBlock) {
   const { scripts, styles, template } = sfcBlock;
@@ -170,9 +207,9 @@ function doCompileScript(
       ? ['typescript']
       : undefined;
     const templateOptions: SFCTemplateCompileOptions = {
-      filename: 'anonymous.vue',
+      filename: id,
       source: descriptor.template?.content || '',
-      id: 'anonymous.vue',
+      id: id,
       isProd: false,
       slotted: false,
       ssr,
@@ -209,4 +246,37 @@ function doCompileScript(
   } else {
     return [`\nconst ${COMP_IDENTIFIER} = {}`, undefined] as const;
   }
+}
+function doCompileTemplate(
+  descriptor: SFCDescriptor,
+  id: string,
+  bindingMetadata: BindingMetadata | undefined,
+  ssr: boolean,
+  isTS: boolean
+) {
+  let { code, errors } = compileTemplate({
+    isProd: false,
+    ast: descriptor.template!.ast,
+    source: descriptor.template!.content,
+    filename: id,
+    id,
+    scoped: descriptor.styles.some((s) => s.scoped),
+    ssr,
+    ssrCssVars: descriptor.cssVars,
+    compilerOptions: {
+      bindingMetadata,
+      expressionPlugins: isTS ? ['typescript'] : undefined,
+    },
+  });
+  if (errors.length) {
+    return errors;
+  }
+  const fnName = ssr ? `ssrRender` : `render`;
+  code =
+    `\n${code.replace(
+      /\nexport (function|const) (render|ssrRender)/,
+      `$1 ${fnName}`
+    )}` + `\n${COMP_IDENTIFIER}.${fnName} = ${fnName}`;
+
+  return code;
 }

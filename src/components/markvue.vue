@@ -5,7 +5,11 @@
 <script setup lang="ts">
 import * as Vue from 'vue';
 import * as serverRenderer from 'vue/server-renderer';
-import { ref, onMounted, createApp } from 'vue';
+
+import { ref, onMounted, createApp, createSSRApp } from 'vue';
+// Vue 的服务端渲染 API 位于 `vue/server-renderer` 路径下
+import { renderToString } from 'vue/server-renderer';
+import { isClient } from '@/utils';
 import { parser } from '@/transform';
 import { sfcPlugin } from '@mdit-vue/plugin-sfc';
 import { componentPlugin } from '@mdit-vue/plugin-component';
@@ -25,8 +29,7 @@ defineOptions({
 const props = withDefaults(
   defineProps<{
     content: string;
-    context: any;
-    ssr?: boolean;
+    context?: any;
     mdi?: MarkdownIt;
   }>(),
   {
@@ -37,13 +40,12 @@ const props = withDefaults(
     },
   }
 );
+
 props.mdi
   ?.use(componentPlugin, {
     // options
   })
-  .use(sfcPlugin, {
-    customBlocks: ['vue-sfc', 'script'],
-  });
+  .use(sfcPlugin);
 
 const extendedWindow: ExtendedWindow = window;
 if (!extendedWindow.__MarkVueModules__) {
@@ -69,14 +71,8 @@ const compose = (component: any) => {
   const render =
     extendedWindow.__MarkVueModules__![id]?.getTemplate?.(props.context) ||
     null;
-  console.log({
-    __scopeId: `data-v-${id}`,
-    ...scriptRet,
-    render,
-  });
-
   return {
-    __scopeId: `data-v-anonymous.vue`,
+    __scopeId: `data-v-${id}`,
     ...scriptRet,
     render,
   };
@@ -85,6 +81,11 @@ const init = async () => {
   if (!wrapper.value) {
     console.warn('[md2vuesfc]: cannot access the wrapper element');
   }
+  if (!props.mdi) {
+    return console.warn('[md2vuesfc]: mdi is not defined');
+  }
+  console.log(isClient);
+  
   const { rewriteComponent } = await parser(props.mdi!, props.content);
   insertStyles(rewriteComponent);
 
