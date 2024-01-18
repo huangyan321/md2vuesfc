@@ -138,7 +138,7 @@ const transformTemplateCode = (id: string, script: string) => {
   const importTransformed = transformImports(script).trim();
   if (importTransformed) {
     return `(function() { window.__MarkVueModules__['${id}'].getTemplate = function (context) {\n${importTransformed.replace(
-      'export',
+      /export/gi,
       'return'
     )}\n} })()`;
   }
