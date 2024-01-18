@@ -15,6 +15,6 @@
     "vue-router": "^4.2.5"
   },
   "dependencies": {
-    "md2vuesfc": "link:C:/Users/vanweiping/Desktop/code/myproject/md2vuesfc"
+    "md2vuesfc": "^0.0.5"
   }
 }
