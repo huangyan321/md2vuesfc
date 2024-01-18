@@ -11,17 +11,17 @@ import {
 } from '@vue/compiler-sfc';
 import type { SfcBlock } from './transform';
 const COMP_IDENTIFIER = '__sfc__';
-export async function createVueSFCModule(sfcBlock: SfcBlock, component: any) {
-  const { scripts, styles, template } = sfcBlock;
-
-  const s = scripts.reduce((p, c) => {
-    return (p += c.content);
-  }, '');
-  const t = template.content;
-  const c = styles.reduce((p, c) => {
-    return (p += c.content);
-  }, '');
-  const sfc = `${t}\n${s}\n${c}`;
+export async function createVueSFCModule(
+  sfcBlock: SfcBlock,
+  component: {
+    id: string;
+    js: string;
+    css: string;
+    ssr: string;
+    template: string;
+  }
+) {
+  const sfc = concatModules(sfcBlock);
 
   const { descriptor } = parse(sfc);
   if (
@@ -55,7 +55,7 @@ export async function createVueSFCModule(sfcBlock: SfcBlock, component: any) {
   try {
     [clientScript, bindings] = doCompileScript(
       descriptor,
-      'anonymous.vue',
+      component.id,
       false,
       isTS
     );
@@ -72,7 +72,7 @@ export async function createVueSFCModule(sfcBlock: SfcBlock, component: any) {
     try {
       const ssrScriptResult = doCompileScript(
         descriptor,
-        'anonymous.vue',
+        component.id,
         true,
         isTS
       );
@@ -89,7 +89,7 @@ export async function createVueSFCModule(sfcBlock: SfcBlock, component: any) {
     component.template = compileTemplate({
       filename: descriptor.filename,
       source: descriptor.template?.content || '',
-      id: 'anonymous.vue',
+      id: component.id,
       isProd: false,
       slotted: false,
       ssr: false,
@@ -113,7 +113,7 @@ export async function createVueSFCModule(sfcBlock: SfcBlock, component: any) {
     const styleResult = await compileStyleAsync({
       source: style.content,
       filename: descriptor.filename,
-      id: 'anonymous.vue',
+      id: component.id,
       scoped: style.scoped,
       modules: !!style.module,
       trim: true,
@@ -145,6 +145,20 @@ export async function createVueSFCModule(sfcBlock: SfcBlock, component: any) {
     component.ssr = ssrCode.trimStart();
   }
 }
+function concatModules(sfcBlock: SfcBlock) {
+  const { scripts, styles, template } = sfcBlock;
+
+  const s = scripts.reduce((p, c) => {
+    return (p += c.content);
+  }, '');
+  const t = template.content || '';
+  const c = styles.reduce((p, c) => {
+    return (p += c.content);
+  }, '');
+  // 拼接完整的sfc字符串
+  const sfc = `${t}\n${s}\n${c}`;
+  return sfc;
+}
 function doCompileScript(
   descriptor: SFCDescriptor,
   id: string,
@@ -171,7 +185,7 @@ function doCompileScript(
     };
     const compiledScript = compileScript(descriptor, {
       isProd: false,
-      id: 'anonymous.vue',
+      id,
       inlineTemplate: true,
       templateOptions: templateOptions,
     });

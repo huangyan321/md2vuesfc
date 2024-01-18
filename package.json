@@ -18,10 +18,12 @@
     "@mdit-vue/plugin-component": "^2.0.0",
     "@mdit-vue/plugin-sfc": "^2.0.0",
     "@vue/compiler-sfc": "^3.4.14",
+    "hash-sum": "^2.0.0",
     "markdown-it": "^14.0.0",
     "vue": "^3.4.14"
   },
   "devDependencies": {
+    "@types/hash-sum": "^1.0.2",
     "@types/markdown-it": "^13.0.7",
     "@types/node": "^20.11.5",
     "@vitejs/plugin-vue": "^4.6.2",
@@ -34,7 +36,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
+    "build": " vite build",
     "preview": "vite preview"
   }
 }

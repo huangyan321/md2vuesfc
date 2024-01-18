@@ -1,8 +1,6 @@
 <!-- @format -->
 <template>
-  <div ref="wrapper">
-    <div id="airport"></div>
-  </div>
+  <div ref="wrapper" id="airport"></div>
 </template>
 <script setup lang="ts">
 import * as Vue from 'vue';
@@ -12,6 +10,7 @@ import { parser } from '@/transform';
 import { sfcPlugin } from '@mdit-vue/plugin-sfc';
 import { componentPlugin } from '@mdit-vue/plugin-component';
 import MarkdownIt from 'markdown-it';
+
 interface ExtendedWindow extends Window {
   __MarkVueModules__?: {
     [key: string]: {
@@ -36,7 +35,6 @@ const props = withDefaults(
       vue: Vue,
       'vue/server-renderer': serverRenderer,
     },
-    ssr: false,
   }
 );
 props.mdi

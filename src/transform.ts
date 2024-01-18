@@ -47,9 +47,13 @@ export interface MarkDownEnv {
 }
 
 import { createVueSFCModule } from './compiler';
+import hashId from 'hash-sum';
+
 export async function parser(mdi: MarkdownIt, code: string) {
+  const id = hashId('anonymous');
   const env = {} as MarkDownEnv;
   let component = {
+    id,
     js: '',
     css: '',
     ssr: '',
@@ -57,7 +61,10 @@ export async function parser(mdi: MarkdownIt, code: string) {
   };
   mdi?.render(code, env);
   const { sfcBlocks: descriptor } = env;
-  await createVueSFCModule(descriptor, component);
+  const error = await createVueSFCModule(descriptor, component);
+  if (error) {
+    throw new Error(error.join('\n'));
+  }
   const rewriteComponent = {
     style: component.css,
     script: transformScriptCode('anonymous.vue', component.js),

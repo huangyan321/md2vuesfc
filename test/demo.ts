@@ -1,7 +1,7 @@
 /** @format */
 
 export const demoContent = `# {{ count }}
-<button @click="add">{{ count }}</button>
+<button @click="add">add</button>
 ## Subtitle
 
 Here's some content.
@@ -18,7 +18,6 @@ const add = () => {
   count.value++
 }
 </script>
-
 ## 你好
 
 <style scoped>

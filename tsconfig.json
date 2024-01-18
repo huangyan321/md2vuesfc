@@ -27,7 +27,7 @@
     },
     "baseUrl": "./",
   },
-  "files": ["./node_modules/@types/markdown-it/index.d.ts"],
+  "files": ["./node_modules/@types/markdown-it/index.d.ts","./node_modules/@types/hash-sum/index.d.ts"],
   "include": [
     "test/**/*.vue",
     "test/**/*.ts",
