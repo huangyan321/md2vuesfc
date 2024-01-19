@@ -1,12 +1,12 @@
 <!-- @format -->
 <template>
-  <div ref="wrapper" id="airport"><AsyncComp></AsyncComp></div>
+  <div ref="wrapper"><AsyncComp /></div>
 </template>
 <script setup lang="ts">
 import * as Vue from 'vue';
 import * as serverRenderer from 'vue/server-renderer';
 
-import { ref, defineAsyncComponent } from 'vue';
+import { defineAsyncComponent, type Component } from 'vue';
 // Vue 的服务端渲染 API 位于 `vue/server-renderer` 路径下
 import { isClient } from '@/utils';
 import { parser } from '@/transform';
@@ -53,7 +53,6 @@ if (!globalCached.__MarkVueModules__) {
   globalCached.__MarkVueModules__ = {};
 }
 
-const wrapper = ref<HTMLDivElement>();
 const insertStyles = (component: any) => {
   const styleTag = document.createElement('style');
   styleTag.innerHTML = component.style!;
@@ -61,9 +60,9 @@ const insertStyles = (component: any) => {
   document.head.appendChild(styleTag);
 };
 
-const AsyncComp = defineAsyncComponent(() => {
-  return new Promise(async (resolve) => {
-    const compose = (component: any) => {
+const AsyncComp = defineAsyncComponent((): Promise<Component> => {
+  return new Promise((resolve) => {
+    const compose = (component: any): Component => {
       const id = component.id;
       if (!globalCached.__MarkVueModules__[id]) {
         globalCached.__MarkVueModules__[id] = {};
@@ -76,15 +75,12 @@ const AsyncComp = defineAsyncComponent(() => {
         ...scriptRet,
       };
     };
-    const { rewriteComponent } = await parser(
-      globalCached.name,
-      props.mdi!,
-      props.content,
-      !isClient
+    parser(globalCached.name, props.mdi!, props.content, !isClient).then(
+      ({ rewriteComponent }) => {
+        isClient && insertStyles(rewriteComponent);
+        resolve(compose(rewriteComponent));
+      }
     );
-    isClient && insertStyles(rewriteComponent);
-    resolve(compose(rewriteComponent));
   });
 });
 </script>
-<style lang="scss" scoped></style>
