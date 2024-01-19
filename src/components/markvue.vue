@@ -1,12 +1,12 @@
 <!-- @format -->
 <template>
-  <div ref="wrapper" id="airport"></div>
+  <div ref="wrapper" id="airport"><AsyncComp></AsyncComp></div>
 </template>
 <script setup lang="ts">
 import * as Vue from 'vue';
 import * as serverRenderer from 'vue/server-renderer';
 
-import { ref, createApp } from 'vue';
+import { ref, defineAsyncComponent } from 'vue';
 // Vue 的服务端渲染 API 位于 `vue/server-renderer` 路径下
 import { isClient } from '@/utils';
 import { parser } from '@/transform';
@@ -60,34 +60,31 @@ const insertStyles = (component: any) => {
   styleTag.id = `markvue-styles`;
   document.head.appendChild(styleTag);
 };
-const compose = (component: any) => {
-  const id = component.id;
-  if (!globalCached.__MarkVueModules__![id]) {
-    globalCached.__MarkVueModules__![id] = {};
-  }
-  eval(component.script!);
-  const scriptRet =
-    globalCached.__MarkVueModules__![id]?.getScript?.(props.context) || null;
-  return {
-    __scopeId: `data-v-${id}`,
-    ...scriptRet,
-  };
-};
-const init = async () => {
-  if (!props.mdi) {
-    return console.warn('[md2vuesfc]: mdi is not defined');
-  }
-  const { rewriteComponent } = await parser(
-    globalCached.name,
-    props.mdi!,
-    props.content,
-    !isClient
-  );
-  insertStyles(rewriteComponent);
 
-  const vm = createApp(compose(rewriteComponent));
-  vm.mount(`#airport`);
-};
-init();
+const AsyncComp = defineAsyncComponent(() => {
+  return new Promise(async (resolve) => {
+    const compose = (component: any) => {
+      const id = component.id;
+      if (!globalCached.__MarkVueModules__[id]) {
+        globalCached.__MarkVueModules__[id] = {};
+      }
+      eval(component.script!);
+      const scriptRet =
+        globalCached.__MarkVueModules__[id]?.getScript?.(props.context) || null;
+      return {
+        __scopeId: `data-v-${id}`,
+        ...scriptRet,
+      };
+    };
+    const { rewriteComponent } = await parser(
+      globalCached.name,
+      props.mdi!,
+      props.content,
+      !isClient
+    );
+    insertStyles(rewriteComponent);
+    resolve(compose(rewriteComponent));
+  });
+});
 </script>
 <style lang="scss" scoped></style>
