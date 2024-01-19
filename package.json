@@ -5,24 +5,17 @@
   "files": [
     "dist"
   ],
-  "main": "dist/md2vuesfc.js",
-  "module": "dist/md2vuesfc.js",
-  "types": "dist/md2vuesfc.d.ts",
+  "main": "./dist/md2vuesfc.js",
+  "module": "./dist/md2vuesfc.js",
+  "types": "./dist/md2vuesfc.d.ts",
   "exports": {
     ".": {
       "types": "./dist/md2vuesfc.d.ts",
-      "import": "./dist/md2vuesfc.js"
+      "import": "./dist/md2vuesfc.js",
+      "require": "./dist/md2vuesfc.cjs"
     },
     "./style.css": "./dist/md2vuesfc.css",
     "./dist/style.css": "./dist/md2vuesfc.css"
-  },
-  "typesVersions": {
-    "*": {
-      "*": [
-        "./dist/*",
-        "./*"
-      ]
-    }
   },
   "dependencies": {
     "@mdit-vue/plugin-component": "^2.0.0",
@@ -30,7 +23,7 @@
     "@vue/compiler-sfc": "^3.4.14",
     "hash-sum": "^2.0.0",
     "markdown-it": "^14.0.0",
-    "vue": "^3.4.14"
+    "vue": "^3.4.15"
   },
   "devDependencies": {
     "@types/hash-sum": "^1.0.2",
@@ -46,7 +39,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "build": " vite build",
+    "bw": " vite build --watch",
+    "b": " vite build",
     "preview": "vite preview"
   }
 }

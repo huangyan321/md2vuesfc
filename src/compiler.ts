@@ -19,11 +19,9 @@ export async function createVueSFCModule(
     js: string;
     css: string;
     ssr: string;
-    template: string;
   }
 ) {
   const id = component.id;
-  const ssr = component.ssr;
   const sfc = concatModules(sfcBlock);
 
   const { descriptor } = parse(sfc);
@@ -86,24 +84,6 @@ export async function createVueSFCModule(
   } else {
     // the script result will be identical.
     ssrCode += clientScript;
-  }
-
-  if (descriptor.template) {
-    component.template = compileTemplate({
-      filename: descriptor.filename,
-      source: descriptor.template?.content || '',
-      id: component.id,
-      isProd: false,
-      slotted: false,
-      ssr: false,
-      ssrCssVars: descriptor.cssVars,
-      scoped: hasScoped,
-      compilerOptions: {
-        mode: 'module',
-      },
-    }).code;
-  } else {
-    component.template = '';
   }
 
   if (descriptor.template && !descriptor.scriptSetup) {
@@ -175,12 +155,11 @@ export async function createVueSFCModule(
     appendSharedCode(
       `\n${COMP_IDENTIFIER}.__file = ${JSON.stringify(descriptor.filename)}` +
         ceStyles +
-        `\nexport default ${COMP_IDENTIFIER}`
+        `\nreturn ${COMP_IDENTIFIER}`
     );
     component.js = clientCode.trimStart();
     component.ssr = ssrCode.trimStart();
   }
-  console.log(component);
 }
 function concatModules(sfcBlock: SfcBlock) {
   const { scripts, styles, template } = sfcBlock;

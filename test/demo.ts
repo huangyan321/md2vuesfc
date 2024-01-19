@@ -1,6 +1,5 @@
-/** @format */
-
-export const demoContent = `# {{ count }}
+export const demoContent =
+  `# {{ count }}
 <button @click="add">add</button>
 ## Subtitle
 
@@ -30,4 +29,4 @@ button {
   border: none;
   cursor: pointer;
 }
-</style>`;
+</style>`

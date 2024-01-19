@@ -4,8 +4,14 @@ import type { MarkDownEnv } from './types/md';
 
 import { createVueSFCModule } from './compiler';
 import hashId from 'hash-sum';
-
-export async function parser(mdi: MarkdownIt, code: string) {
+let global = 'globalCached';
+export async function parser(
+  globalCached: string,
+  mdi: MarkdownIt,
+  code: string,
+  ssr: boolean
+) {
+  global = globalCached;
   const id = hashId('anonymous');
   const env = {} as MarkDownEnv;
   let component = {
@@ -13,7 +19,6 @@ export async function parser(mdi: MarkdownIt, code: string) {
     js: '',
     css: '',
     ssr: '',
-    template: '',
   };
   mdi?.render(code, env);
   const { sfcBlocks: descriptor } = env;
@@ -21,12 +26,14 @@ export async function parser(mdi: MarkdownIt, code: string) {
   if (error) {
     throw new Error(error.join('\n'));
   }
+  console.log('[md2vuesfc] successfully compiled');
+
   const rewriteComponent = {
     id,
     style: component.css,
-    script: transformScriptCode(id, component.js),
-    template: transformTemplateCode(id, component.template),
+    script: transformScriptCode(id, ssr ? component.ssr : component.js),
   };
+
   return { rewriteComponent };
 }
 const IMPORT_REGEX = /import\s+(.+)\s+from\s*["'](.+)["'];?/gi;
@@ -84,20 +91,10 @@ const transformImports = (script: string) => {
 function transformScriptCode(id: string, script: string) {
   const importTransformed = transformImports(script).trim();
   if (importTransformed) {
-    return `(function() { window.__MarkVueModules__['${id}'].getScript = function (context) {\n${importTransformed.replace(
+    return `(function() { ${global}.__MarkVueModules__['${id}'].getScript = function (context) {\n${importTransformed.replace(
       'export default',
       'return'
     )}\n}; })()`;
   }
   return '';
 }
-const transformTemplateCode = (id: string, script: string) => {
-  const importTransformed = transformImports(script).trim();
-  if (importTransformed) {
-    return `(function() { window.__MarkVueModules__['${id}'].getTemplate = function (context) {\n${importTransformed.replace(
-      /export/gi,
-      'return'
-    )}\n} })()`;
-  }
-  return '';
-};

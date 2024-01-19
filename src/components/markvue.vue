@@ -6,23 +6,14 @@
 import * as Vue from 'vue';
 import * as serverRenderer from 'vue/server-renderer';
 
-import { ref, onMounted, createApp, createSSRApp } from 'vue';
+import { ref, createApp } from 'vue';
 // Vue 的服务端渲染 API 位于 `vue/server-renderer` 路径下
-import { renderToString } from 'vue/server-renderer';
 import { isClient } from '@/utils';
 import { parser } from '@/transform';
 import { sfcPlugin } from '@mdit-vue/plugin-sfc';
 import { componentPlugin } from '@mdit-vue/plugin-component';
 import MarkdownIt from 'markdown-it';
 
-interface ExtendedWindow extends Window {
-  __MarkVueModules__?: {
-    [key: string]: {
-      getScript?: (context: Record<string, unknown>) => any;
-      getTemplate?: (context: Record<string, unknown>) => any;
-    };
-  };
-}
 defineOptions({
   name: 'MarkVue',
 });
@@ -47,9 +38,19 @@ props.mdi
   })
   .use(sfcPlugin);
 
-const extendedWindow: ExtendedWindow = window;
-if (!extendedWindow.__MarkVueModules__) {
-  extendedWindow.__MarkVueModules__ = {};
+const globalCached: {
+  name: string;
+  __MarkVueModules__: {
+    [key: string]: {
+      getScript?: (context: Record<string, unknown>) => any;
+    };
+  };
+} = {
+  name: 'globalCached',
+  __MarkVueModules__: {},
+};
+if (!globalCached.__MarkVueModules__) {
+  globalCached.__MarkVueModules__ = {};
 }
 
 const wrapper = ref<HTMLDivElement>();
@@ -61,40 +62,32 @@ const insertStyles = (component: any) => {
 };
 const compose = (component: any) => {
   const id = component.id;
-  if (!extendedWindow.__MarkVueModules__![id]) {
-    extendedWindow.__MarkVueModules__![id] = {};
+  if (!globalCached.__MarkVueModules__![id]) {
+    globalCached.__MarkVueModules__![id] = {};
   }
   eval(component.script!);
-  eval(component.template!);
   const scriptRet =
-    extendedWindow.__MarkVueModules__![id]?.getScript?.(props.context) || null;
-  const render =
-    extendedWindow.__MarkVueModules__![id]?.getTemplate?.(props.context) ||
-    null;
+    globalCached.__MarkVueModules__![id]?.getScript?.(props.context) || null;
   return {
     __scopeId: `data-v-${id}`,
     ...scriptRet,
-    render,
   };
 };
 const init = async () => {
-  if (!wrapper.value) {
-    console.warn('[md2vuesfc]: cannot access the wrapper element');
-  }
   if (!props.mdi) {
     return console.warn('[md2vuesfc]: mdi is not defined');
   }
-  console.log(isClient);
-  
-  const { rewriteComponent } = await parser(props.mdi!, props.content);
+  const { rewriteComponent } = await parser(
+    globalCached.name,
+    props.mdi!,
+    props.content,
+    !isClient
+  );
   insertStyles(rewriteComponent);
 
   const vm = createApp(compose(rewriteComponent));
   vm.mount(`#airport`);
 };
-
-onMounted(() => {
-  init();
-});
+init();
 </script>
 <style lang="scss" scoped></style>
