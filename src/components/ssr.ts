@@ -7,6 +7,7 @@ import { renderToString } from 'vue/server-renderer';
 import MarkdownIt from 'markdown-it';
 import { parser } from '../transform';
 import { sfcPlugin } from '@mdit-vue/plugin-sfc';
+import { isClient } from '@/utils';
 import { componentPlugin } from '@mdit-vue/plugin-component';
 import { demoContent } from '../../test/demo';
 const context = {
@@ -33,6 +34,13 @@ const globalCached: {
 if (!globalCached.__MarkVueModules__) {
   globalCached.__MarkVueModules__ = {};
 }
+const insertStyles = (component: any) => {
+  const styleTag = document.createElement('style');
+  styleTag.innerHTML = component.style!;
+  styleTag.id = `markvue-styles`;
+  document.head.appendChild(styleTag);
+};
+
 const compose = (component: any) => {
   const id = component.id;
   if (!globalCached.__MarkVueModules__![id]) {
@@ -56,6 +64,7 @@ async function init() {
   // console.log(rewriteComponent.script);
 
   const vm = createSSRApp(compose(rewriteComponent));
+  isClient && insertStyles(rewriteComponent);
   renderToString(vm).then((html) => {
     console.log(html);
   });
