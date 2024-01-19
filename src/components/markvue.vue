@@ -82,7 +82,7 @@ const AsyncComp = defineAsyncComponent(() => {
       props.content,
       !isClient
     );
-    insertStyles(rewriteComponent);
+    isClient && insertStyles(rewriteComponent);
     resolve(compose(rewriteComponent));
   });
 });
