@@ -14,32 +14,31 @@ import { isClient } from '@/utils';
 import { parser } from '@/transform';
 import { sfcPlugin } from '@mdit-vue/plugin-sfc';
 import { componentPlugin } from '@mdit-vue/plugin-component';
-import MarkdownIt from 'markdown-it';
-
+import type MarkdownIt from 'markdown-it';
+import markdownIt from 'markdown-it';
 defineOptions({
   name: 'MarkVue',
 });
-const props = withDefaults(
-  defineProps<{
-    content: string;
-    context?: any;
-    mdi?: MarkdownIt;
-  }>(),
-  {
-    content: '',
-    context: {
-      vue: Vue,
-      'vue/server-renderer': serverRenderer,
-    },
-  }
-);
-
-props.mdi
-  ?.use(componentPlugin, {
+interface IProps {
+  content: string;
+  context: {
+    components?: {
+      [key: string]: Component;
+    };
+    [key: string]: any;
+  };
+  markdownIt?: MarkdownIt;
+}
+const props = withDefaults(defineProps<IProps>(), {
+  content: '',
+  context: () => ({}),
+});
+const mdi = props.markdownIt || markdownIt({ html: true });
+mdi
+  .use(componentPlugin, {
     // options
   })
   .use(sfcPlugin);
-
 const globalCached: {
   name: string;
   __MarkVueModules__: {
@@ -63,14 +62,25 @@ const Comp = defineAsyncComponent((): Promise<Component> => {
         globalCached.__MarkVueModules__[id] = {};
       }
       eval(component.script!);
+      const contextProxy = new Proxy(props.context, {
+        get(target, key, receiver) {
+          if (key === 'vue') {
+            return Vue;
+          }
+          if (key === 'vue/server-renderer') {
+            return serverRenderer;
+          }
+          return Reflect.get(target, key, receiver);
+        },
+      });
       const scriptRet =
-        globalCached.__MarkVueModules__[id]?.getScript?.(props.context) || null;
+        globalCached.__MarkVueModules__[id]?.getScript?.(contextProxy) || null;
       return {
         __scopeId: `data-v-${id}`,
         ...scriptRet,
       };
     };
-    parser(globalCached.name, props.mdi!, props.content, !isClient).then(
+    parser(globalCached.name, mdi, props.content, !isClient).then(
       ({ rewriteComponent }) => {
         resolve(compose(rewriteComponent));
       }

@@ -3,12 +3,21 @@
 <script setup lang="ts">
 import { demoContent } from './demo';
 import MarkdownIt from 'markdown-it';
+import HelloWorld from './helloworld.vue';
 const md = MarkdownIt({ html: true });
 </script>
 
 <template>
   <div>
-    <MarkVue :mdi="md" :content="demoContent"></MarkVue>
+    <MarkVue
+      :markdown-it="md"
+      :content="demoContent"
+      :context="{
+        components: {
+          helloworld: HelloWorld,
+        },
+      }"
+    ></MarkVue>
   </div>
 </template>
 
