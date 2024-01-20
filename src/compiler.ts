@@ -30,7 +30,7 @@ export async function createVueSFCModule(
 ) {
   const id = component.id;
   const sfc = concatModules(sfcBlock);
-
+  console.log(sfc);
   const { descriptor } = parse(sfc);
   if (
     descriptor.styles.some((s) => s.lang) ||
@@ -127,6 +127,7 @@ export async function createVueSFCModule(
   }
 
   let css = '';
+  let styles: string[] = [];
 
   for (const style of descriptor.styles) {
     if (style.module) {
@@ -149,6 +150,7 @@ export async function createVueSFCModule(
       }
       // proceed even if css compile errors
     } else {
+      styles.push(styleResult.code);
       css += styleResult.code + '\n';
     }
   }
@@ -158,7 +160,8 @@ export async function createVueSFCModule(
     component.css = '/* No <style> tags present */';
   }
   if (clientCode || ssrCode) {
-    const ceStyles = '';
+    const ceStyles = `\n${COMP_IDENTIFIER}.styles = ${JSON.stringify(styles)}`;
+
     appendSharedCode(
       `\n${COMP_IDENTIFIER}.__file = ${JSON.stringify(descriptor.filename)}` +
         ceStyles +
@@ -183,7 +186,7 @@ function concatModules(sfcBlock: SfcBlock) {
     t = juice(t + c);
   }
   // 拼接完整的sfc字符串
-  const sfc = `${t}\n${s}`;
+  const sfc = `${t}\n${s}\n${c}`;
   return sfc;
 }
 async function doCompileScript(

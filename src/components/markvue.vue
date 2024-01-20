@@ -9,7 +9,7 @@
 import * as Vue from 'vue';
 import * as serverRenderer from 'vue/server-renderer';
 
-import { defineAsyncComponent, type Component, h, Fragment } from 'vue';
+import { defineAsyncComponent, type Component, h } from 'vue';
 // Vue 的服务端渲染 API 位于 `vue/server-renderer` 路径下
 import { isClient } from '@/utils';
 import { parser } from '@/transform';
@@ -54,7 +54,12 @@ const globalCached: {
 if (!globalCached.__MarkVueModules__) {
   globalCached.__MarkVueModules__ = {};
 }
-
+const insertStyles = (component: any) => {
+  const styleTag = document.createElement('style');
+  styleTag.innerHTML = component.style!;
+  styleTag.id = `markvue-styles`;
+  document.head.appendChild(styleTag);
+};
 const Comp = defineAsyncComponent((): Promise<Component> => {
   return new Promise((resolve) => {
     const compose = (component: any): Component => {
@@ -94,6 +99,7 @@ const Comp = defineAsyncComponent((): Promise<Component> => {
     };
     parser(globalCached.name, mdi, props.content, !isClient).then(
       ({ rewriteComponent }) => {
+        isClient && insertStyles(rewriteComponent);
         resolve(compose(rewriteComponent));
       }
     );

@@ -27,6 +27,7 @@ export async function parser(
     id,
     success: true,
     rendered,
+    style: component.css,
     script: transformScriptCode(id, ssr ? component.ssr : component.js),
   };
   if (error) {
