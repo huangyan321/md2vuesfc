@@ -1,4 +1,94 @@
 /** @format */
 
-export const demoContent = "# 前言\n\n这些都是网上收集的方法\n\n## 验证器\n\n### 传入的值是否是原始值(`Primitive`)\n\n```js\nfunction isPrimitive(value: any): boolean {\n  return (\n    typeof value === 'string' ||\n    typeof value === 'number' ||\n    // $flow-disable-line\n    typeof value === 'symbol' ||\n    typeof value === 'boolean'\n  )\n}\n```\n\n### 传入的值是否为空\n\n```js\nfunction isUndef(v: any): v is undefined | null {\n  return v === undefined || v === null\n}\n```\n\n### 传入的值是否是有效的数组索引\n\n```js\nfunction isValidArrayIndex(val: any): boolean {\n  const n = parseFloat(String(val))\n  return n >= 0 && Math.floor(n) === n && isFinite(val)\n}\n```\n\n### 传入 的值是否是Promise\n\n```js\nfunction isPromise(val: any): val is Promise<any> {\n  return (\n    isDef(val) &&\n    typeof val.then === 'function' &&\n    typeof val.catch === 'function'\n  )\n}\n```\n\n### 获取 `obj` 的内部 `[[Class]]` 属性\n\n```js\nconst _toString = Object.prototype.toString\n```\n\n### 传入的值是否是普通对象\n\n```js\nfunction isPlainObject(obj: any): boolean {\n  return _toString.call(obj) === '[object Object]'\n}\n```\n\n### 检查日期是否有效\n\n```js\nconst isDateValid = (...val) => !Number.isNaN(new Date(...val).valueOf());\n\nisDateValid(\"December 17, 1995 03:24:00\");\n// Result: true\n```\n\n## 转换器\n\n### 将类数组转换为真实数组\n\n```js\nfunction toArray(list: any, start?: number): Array<any> {\n  start = start || 0\n  let i = list.length - start\n  const ret: Array<any> = new Array(i)\n  while (i--) {\n    ret[i] = list[i + start]\n  }\n  return ret\n}\n```\n\n### 将驼峰字符串转为连字符串\n\n```js\nconst hyphenateRE = /\\B([A-Z])/g\nexport const hyphenate = cached((str: string): string => {\n  return str.replace(hyphenateRE, '-$1').toLowerCase()\n})\n```\n\n\n\n<script setup lang=\"ts\">\nimport { ref,computed } from 'vue'\n\nconst hyphenateRE = /\\B([A-Z])/g\nconst hyphenate = (str: string): string => {\n  return str.replace(hyphenateRE, '-$1').toLowerCase()\n}\nconst value = ref('')\nconst result = computed(() => hyphenate(value.value))\n</script>\n\n请输入： <input style=\"border:1px solid #000\" v-model=\"value\" />\n结果：<div> {{result}}</div>\n\n\n\n\n\n### 将字符串首字母大写\n\n```js\nconst capitalize = str => str.charAt(0).toUpperCase() + str.slice(1)\n\ncapitalize(\"follow for more\")\n// Result: Follow for more\n```\n\n## 实用工具\n\n### 单次执行函数（once）\n\n```js\n/**\n * Ensure a function is called only once.\n */\n export function once (fn: Function): Function {\n  let called = false\n  return function () {\n    if (!called) {\n      called = true\n      fn.apply(this, arguments)\n    }\n  }\n}\n```\n\n### 在输入框中如何判断网址是否正确\n\n```js\nfunction isUrl(url) {\n    try {\n        new URL(url);\n        return true;\n    } catch(err){\n    \t return false;\n\t\t}\n}\n```\n\n###### 监听一段html中的所有图片加载完成后进行其他操作\n\n```js\n/**\n * 传入dom元素节点和html字符串，该promise函数功能：\n   1. 解析html，并将其添加到context\n   2. 等待图片资源加载完毕(错误)再进行决议(回调)\n * @param {String} htmlStr \n * @param {Element} context \n * @returns Promise\n */\nconst parseHtmlWithStabilizeImg = (htmlStr, context) => {\n  return new Promise((resolve, reject) => {\n    let tmp,\n      nodes = []\n    const safe = document.createDocumentFragment()\n    tmp = safe.appendChild(document.createElement('div'))\n    tmp.innerHTML = htmlStr.replace(rxhtmlTag, '<$1></$2>')\n    const images = Array.from(safe.querySelectorAll('img'))\n    const promises = images.map((node) => {\n      return new Promise((resolve, reject) => {\n        const loadImg = new Image()\n        loadImg.src = node.src\n        loadImg.onload = () => {\n          resolve(node)\n        }\n        loadImg.onerror = () => {\n          resolve(node)\n        }\n      })\n    })\n    merge(nodes, tmp.childNodes)\n    Promise.all(promises)\n      .then((res) => {\n        context.innerHTML = ''\n        for (let i = 0; i < nodes.length; i++) {\n          context.appendChild(nodes[i])\n        }\n        resolve()\n      })\n      .catch((err) => {\n        console.log(err)\n        resolve()\n      })\n  })\n}\n```\n\n### 获取浏览器cookie\n\n```js\nconst cookie = name => `; ${document.cookie}`.split(`; ${name}=`).pop().split(';').shift();\n\ncookie('_ga');\n// Result: \"GA1.2.1929736587.1601974046\"\n```\n\n### 清除所有cookie\n\n```js\nconst clearCookies = document.cookie.split(';').forEach(cookie => document.cookie = cookie.replace(/^ +/, '').replace(/=.\\*/, `=;expires=${new Date(0).toUTCString()};path=/`));\n```\n\n### 将RGB转换为16进制\n\n```js\nconst rgbToHex = (r, g, b) =>\n\"#\" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1);\n\nrgbToHex(0, 51, 255);\n// Result: #0033ff`\n```\n\n### 复制到剪切板\n\n使用 navigator.clipboard.writeText 轻松将任何文本复制到剪贴板上\n\n```js\nconst copyToClipboard = (text) => navigator.clipboard.writeText(text);\n\ncopyToClipboard(\"Hello World\");\n```\n\n### 给出一个日期，程序给出属于今年的哪一天\n\n```js\nconst dayOfYear = (date) =>\nMath.floor((date - new Date(date.getFullYear(), 0, 0)) / 1000 / 60 / 60 / 24);\n\ndayOfYear(new Date());\n// Result: 272\n```\n\n### 计算两个日期之间相差的天数\n\n```js\nconst dayDif = (date1, date2) => Math.ceil(Math.abs(date1.getTime() - date2.getTime()) / 86400000)\n\ndayDif(new Date(\"2020-10-21\"), new Date(\"2021-10-22\"))\n// Result: 366\n```\n\n### 生成随机16进制\n\n```js\nconst randomHex = () => `#${Math.floor(Math.random() * 0xffffff).toString(16).padEnd(6, \"0\")}`;\n\nconsole.log(randomHex());\n// Result: #92b008\n```\n\n### 从URL中获取查询参数\n\n```js\nconst getParameters = (URL) => {\n  URL = JSON.parse('{\"' + decodeURI(URL.split(\"?\")[1]).replace(/\"/g, '\\\\\"').replace(/&/g, '\",\"').replace(/=/g, '\":\"') +'\"}');\n  return JSON.stringify(URL);\n  };\n  \n  getParameters(window.location)\n  // Result: { search : \"easy\", page : 3 }\n```\n\n### 获取`时分秒`格式的字符串\n\n```js\nconst timeFromDate = date => date.toTimeString().slice(0, 8);\n\n  console.log(timeFromDate(new Date(2021, 0, 10, 17, 30, 0)));\n  // Result: \"17:30:00\"\n```\n\n### 回到顶部（常用于右下角快捷返回功能）\n\n```js\nconst goToTop = () => window.scrollTo(0, 0);\n\n  goToTop();\n```\n\n### 获取用户选定的文本\n\n```js\nconst getSelectedText = () => window.getSelection().toString();\n\ngetSelectedText();\n```\n\n### 打乱数组\n\n```js\nconst shuffleArray = (arr) => arr.sort(() => 0.5 - Math.random());\n\nconsole.log(shuffleArray([1, 2, 3, 4]));\n// Result: [ 1, 4, 3, 2 ]\n```\n\n### 检查用户是否处于黑暗模式\n\n```js\nconst isDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches\n\nconsole.log(isDarkMode) // Result: True or False\n```\n\n### 筛选出window对象中由开发者（或引入的第三方库）自定义的属性\n\n```js\nfunction getCustomWindowProperties() {\n  // 创建一个新的 iframe 来获取干净的 window 对象\n  const iframe = document.createElement('iframe');\n  document.body.appendChild(iframe);\n  const cleanWindow = iframe.contentWindow;\n\n  // 比较当前 window 对象和干净的 window 对象\n  const customProperties = [];\n  for (const prop in window) {\n    if (!(prop in cleanWindow)) {\n      customProperties.push(prop);\n    }\n  }\n\n  // 清理：移除 iframe\n  document.body.removeChild(iframe);\n\n  return customProperties;\n}\n\n\nconst customProperties = getCustomWindowProperties();\nconsole.log(customProperties); // 输出由开发者添加的 window 属性列表\n```"
-;
+export const demoContent = `
+<script setup>
+import { ref } from 'vue'
+
+const show = ref(false)
+</script>
+
+<button id="show-modal" @click="show = true">Show Modal</button>
+
+<Transition name="modal">
+  <div v-if="show" class="modal-mask">
+    <div class="modal-container">
+      <div class="modal-header">
+        <slot name="header">default header</slot>
+      </div>
+      <div class="modal-body">
+        <slot name="body">default body</slot>
+      </div>
+      <div class="modal-footer">
+        <slot name="footer">
+          default footer
+          <button
+            class="modal-default-button"
+            @click="show=false"
+          >OK</button>
+        </slot>
+      </div>
+    </div>
+  </div>
+</Transition>
+
+<style scoped>
+.modal-mask {
+  position: fixed;
+  z-index: 9998;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  transition: opacity 0.3s ease;
+}
+
+.modal-container {
+  width: 300px;
+  margin: auto;
+  padding: 20px 30px;
+  background-color: #fff;
+  border-radius: 2px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+  transition: all 0.3s ease;
+}
+
+.modal-header h3 {
+  margin-top: 0;
+  color: #42b983;
+}
+
+.modal-body {
+  margin: 20px 0;
+}
+
+.modal-default-button {
+  float: right;
+}
+
+/*
+ * 对于 transition="modal" 的元素来说
+ * 当通过 Vue.js 切换它们的可见性时
+ * 以下样式会被自动应用。
+ *
+ * 你可以简单地通过编辑这些样式
+ * 来体验该模态框的过渡效果。
+ */
+
+.modal-enter-from {
+  opacity: 0;
+}
+
+.modal-leave-to {
+  opacity: 0;
+}
+
+.modal-enter-from .modal-container,
+.modal-leave-to .modal-container {
+  -webkit-transform: scale(1.1);
+  transform: scale(1.1);
+}
+</style>
+
+`;
