@@ -1,7 +1,8 @@
 {
   "name": "md2vuesfc",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "type": "module",
+  "description": "Parse markdown into vue components at runtime",
   "files": [
     "dist"
   ],
@@ -24,6 +25,7 @@
     "hash-sum": "^2.0.0",
     "juice": "^10.0.0",
     "markdown-it": "^14.0.0",
+    "sucrase": "^3.35.0",
     "vue": "^3.4.15"
   },
   "devDependencies": {

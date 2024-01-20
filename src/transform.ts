@@ -22,7 +22,8 @@ export async function parser(
   };
   mdi?.render(code, env);
   const { sfcBlocks: descriptor } = env;
-  const error = await createVueSFCModule(descriptor, component);
+  const [error] = await createVueSFCModule(descriptor, component);
+
   if (error) {
     throw new Error(error.join('\n'));
   }

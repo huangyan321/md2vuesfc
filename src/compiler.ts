@@ -11,8 +11,14 @@ import {
   type BindingMetadata,
 } from '@vue/compiler-sfc';
 import type { SfcBlock } from './types/md';
+import { transform } from 'sucrase';
 import juice from 'juice';
 const COMP_IDENTIFIER = '__sfc__';
+async function transformTS(src: string) {
+  return transform(src, {
+    transforms: ['typescript'],
+  }).code;
+}
 export async function createVueSFCModule(
   sfcBlock: SfcBlock,
   component: {
@@ -55,7 +61,7 @@ export async function createVueSFCModule(
   let clientScript: string;
   let bindings: any;
   try {
-    [clientScript, bindings] = doCompileScript(
+    [clientScript, bindings] = await doCompileScript(
       descriptor,
       component.id,
       false,
@@ -72,7 +78,7 @@ export async function createVueSFCModule(
   // 2.using cssVars, as it do not need to be injected during SSR.
   if (descriptor.scriptSetup || descriptor.cssVars.length > 0) {
     try {
-      const ssrScriptResult = doCompileScript(
+      const ssrScriptResult = await doCompileScript(
         descriptor,
         component.id,
         true,
@@ -88,7 +94,7 @@ export async function createVueSFCModule(
   }
 
   if (descriptor.template && !descriptor.scriptSetup) {
-    const clientTemplateResult = doCompileTemplate(
+    const clientTemplateResult = await doCompileTemplate(
       descriptor,
       id,
       bindings,
@@ -99,7 +105,7 @@ export async function createVueSFCModule(
       return clientTemplateResult;
     }
     clientCode += `;${clientTemplateResult}`;
-    const ssrTemplateResult = doCompileTemplate(
+    const ssrTemplateResult = await doCompileTemplate(
       descriptor,
       id,
       bindings,
@@ -161,6 +167,7 @@ export async function createVueSFCModule(
     component.js = clientCode.trimStart();
     component.ssr = ssrCode.trimStart();
   }
+  return [];
 }
 function concatModules(sfcBlock: SfcBlock) {
   const { scripts, styles, template } = sfcBlock;
@@ -179,7 +186,7 @@ function concatModules(sfcBlock: SfcBlock) {
   const sfc = `${t}\n${s}`;
   return sfc;
 }
-function doCompileScript(
+async function doCompileScript(
   descriptor: SFCDescriptor,
   id: string,
   ssr: boolean,
@@ -225,12 +232,15 @@ function doCompileScript(
         COMP_IDENTIFIER,
         expressionPlugins
       );
+    if ((descriptor.script || descriptor.scriptSetup)!.lang === 'ts') {
+      code = await transformTS(code);
+    }
     return [code, compiledScript.bindings] as const;
   } else {
     return [`\nconst ${COMP_IDENTIFIER} = {}`, undefined] as const;
   }
 }
-function doCompileTemplate(
+async function doCompileTemplate(
   descriptor: SFCDescriptor,
   id: string,
   bindingMetadata: BindingMetadata | undefined,
@@ -260,6 +270,8 @@ function doCompileTemplate(
       /\nexport (function|const) (render|ssrRender)/,
       `$1 ${fnName}`
     )}` + `\n${COMP_IDENTIFIER}.${fnName} = ${fnName}`;
-
+  if ((descriptor.script || descriptor.scriptSetup)?.lang === 'ts') {
+    code = await transformTS(code);
+  }
   return code;
 }

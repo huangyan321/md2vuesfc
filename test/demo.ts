@@ -1,5 +1,6 @@
-export const demoContent =
-  `# {{ count }}
+/** @format */
+
+export const demoContent = `# {{ count }}
 <button @click="add">add</button>
 <helloworld></helloworld>
 ## Subtitle
@@ -9,12 +10,23 @@ Here's some content.
 Next is a Vue SFC (counter).
 
 
-<script setup>
-import { ref,getCurrentInstance } from 'vue';
+<script lang="ts">
+import { ref,type Ref } from 'vue';
 import { helloworld } from 'components'
-const count = ref(0);
-const add = () => {
-  count.value++
+export default {
+  components: {
+    helloworld
+  },
+  setup(){
+    const count:Ref<number> = ref(0);
+    const add = () => {
+    count.value++
+  }
+    return {
+      count,
+      add
+    }
+  }
 }
 </script>
 ## 你好
@@ -29,4 +41,4 @@ button {
   border: none;
   cursor: pointer;
 }
-</style>`
+</style>`;
