@@ -93,7 +93,6 @@ const Comp = defineAsyncComponent((): Promise<Component> => {
         globalCached.__MarkVueModules__[id]?.getScript?.(contextProxy) || null;
 
       return {
-        __scopeId: `data-v-${id}`,
         ...scriptRet,
       };
     };

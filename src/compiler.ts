@@ -210,6 +210,7 @@ async function doCompileScript(
       ssrCssVars: descriptor.cssVars,
       scoped: descriptor.styles.some((s) => s.scoped),
       compilerOptions: {
+        parseMode: 'sfc',
         mode: 'module',
         expressionPlugins,
       },
