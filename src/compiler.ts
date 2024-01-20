@@ -30,7 +30,6 @@ export async function createVueSFCModule(
 ) {
   const id = component.id;
   const sfc = concatModules(sfcBlock);
-  console.log(sfc);
   const { descriptor } = parse(sfc);
   if (
     descriptor.styles.some((s) => s.lang) ||
@@ -136,7 +135,7 @@ export async function createVueSFCModule(
 
     const styleResult = await compileStyleAsync({
       source: style.content,
-      filename: descriptor.filename,
+      filename: component.id,
       id: component.id,
       scoped: style.scoped,
       modules: !!style.module,
@@ -163,7 +162,7 @@ export async function createVueSFCModule(
     const ceStyles = `\n${COMP_IDENTIFIER}.styles = ${JSON.stringify(styles)}`;
 
     appendSharedCode(
-      `\n${COMP_IDENTIFIER}.__file = ${JSON.stringify(descriptor.filename)}` +
+      `\n${COMP_IDENTIFIER}.__file = '${String(id)}'` +
         ceStyles +
         `\nreturn ${COMP_IDENTIFIER}`
     );
