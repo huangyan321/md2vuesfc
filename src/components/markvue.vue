@@ -97,7 +97,7 @@ const Comp = defineAsyncComponent((): Promise<Component> => {
         ...scriptRet,
       };
     };
-    parser(globalCached.name, mdi, props.content, !isClient).then(
+    parser(globalCached.name, mdi, props.content, false).then(
       ({ rewriteComponent }) => {
         isClient && insertStyles(rewriteComponent);
         resolve(compose(rewriteComponent));
