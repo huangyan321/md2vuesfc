@@ -9,7 +9,7 @@
 import * as Vue from 'vue';
 import * as serverRenderer from 'vue/server-renderer';
 
-import { defineAsyncComponent, type Component } from 'vue';
+import { defineAsyncComponent, type Component, h, Fragment } from 'vue';
 // Vue 的服务端渲染 API 位于 `vue/server-renderer` 路径下
 import { isClient } from '@/utils';
 import { parser } from '@/transform';
@@ -59,6 +59,16 @@ const Comp = defineAsyncComponent((): Promise<Component> => {
   return new Promise((resolve) => {
     const compose = (component: any): Component => {
       const id = component.id;
+      if (!component.success) {
+        return {
+          __scopeId: `data-v-${id}`,
+          render() {
+            return h('div', {
+              innerHTML: component.rendered,
+            });
+          },
+        };
+      }
       if (!globalCached.__MarkVueModules__[id]) {
         globalCached.__MarkVueModules__[id] = {};
       }
@@ -76,6 +86,7 @@ const Comp = defineAsyncComponent((): Promise<Component> => {
       });
       const scriptRet =
         globalCached.__MarkVueModules__[id]?.getScript?.(contextProxy) || null;
+
       return {
         __scopeId: `data-v-${id}`,
         ...scriptRet,

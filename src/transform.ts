@@ -20,20 +20,21 @@ export async function parser(
     css: '',
     ssr: '',
   };
-  mdi?.render(code, env);
+  const rendered = mdi?.render(code, env);
   const { sfcBlocks: descriptor } = env;
   const [error] = await createVueSFCModule(descriptor, component);
-
-  if (error) {
-    throw new Error(error.join('\n'));
-  }
-  console.log('[md2vuesfc] successfully compiled');
-
   const rewriteComponent = {
     id,
-    style: component.css,
+    success: true,
+    rendered,
     script: transformScriptCode(id, ssr ? component.ssr : component.js),
   };
+  if (error) {
+    rewriteComponent.success = false;
+    console.warn('[md2vuesfc] compiled failed ', error);
+  } else {
+    console.log('[md2vuesfc] successfully compiled');
+  }
 
   return { rewriteComponent };
 }
