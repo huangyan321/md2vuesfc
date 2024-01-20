@@ -1,6 +1,8 @@
 <!-- @format -->
 <template>
-  <div ref="wrapper"><AsyncComp /></div>
+  <div ref="wrapper">
+    <Comp />
+  </div>
 </template>
 <script setup lang="ts">
 import * as Vue from 'vue';
@@ -53,14 +55,7 @@ if (!globalCached.__MarkVueModules__) {
   globalCached.__MarkVueModules__ = {};
 }
 
-const insertStyles = (component: any) => {
-  const styleTag = document.createElement('style');
-  styleTag.innerHTML = component.style!;
-  styleTag.id = `markvue-styles`;
-  document.head.appendChild(styleTag);
-};
-
-const AsyncComp = defineAsyncComponent((): Promise<Component> => {
+const Comp = defineAsyncComponent((): Promise<Component> => {
   return new Promise((resolve) => {
     const compose = (component: any): Component => {
       const id = component.id;
@@ -77,7 +72,6 @@ const AsyncComp = defineAsyncComponent((): Promise<Component> => {
     };
     parser(globalCached.name, props.mdi!, props.content, !isClient).then(
       ({ rewriteComponent }) => {
-        isClient && insertStyles(rewriteComponent);
         resolve(compose(rewriteComponent));
       }
     );

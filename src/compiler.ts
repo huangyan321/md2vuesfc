@@ -11,6 +11,7 @@ import {
   type BindingMetadata,
 } from '@vue/compiler-sfc';
 import type { SfcBlock } from './types/md';
+import juice from 'juice';
 const COMP_IDENTIFIER = '__sfc__';
 export async function createVueSFCModule(
   sfcBlock: SfcBlock,
@@ -167,12 +168,13 @@ function concatModules(sfcBlock: SfcBlock) {
   const s = scripts.reduce((p, c) => {
     return (p += c.content);
   }, '');
-  const t = template.content || '';
   const c = styles.reduce((p, c) => {
     return (p += c.content);
   }, '');
+  const t = juice((template.content || '') + c);
+
   // 拼接完整的sfc字符串
-  const sfc = `${t}\n${s}\n${c}`;
+  const sfc = `${t}\n${s}`;
   return sfc;
 }
 function doCompileScript(

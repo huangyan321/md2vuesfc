@@ -22,6 +22,7 @@
     "@mdit-vue/plugin-sfc": "^2.0.0",
     "@vue/compiler-sfc": "^3.4.14",
     "hash-sum": "^2.0.0",
+    "juice": "^10.0.0",
     "markdown-it": "^14.0.0",
     "vue": "^3.4.15"
   },
