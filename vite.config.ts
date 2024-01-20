@@ -46,6 +46,8 @@ export default defineConfig({
         '@vue/compiler-sfc',
         '@vue/server-renderer',
         '@vue/shared',
+        'sucrase',
+        'juice',
       ],
       output: {
         chunkFileNames: 'chunks/[name]-[hash].js',
