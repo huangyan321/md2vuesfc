@@ -171,8 +171,10 @@ function concatModules(sfcBlock: SfcBlock) {
   const c = styles.reduce((p, c) => {
     return (p += c.content);
   }, '');
-  const t = juice((template.content || '') + c);
-
+  let t = template.content || '';
+  if (c) {
+    t = juice(t + c);
+  }
   // 拼接完整的sfc字符串
   const sfc = `${t}\n${s}`;
   return sfc;
