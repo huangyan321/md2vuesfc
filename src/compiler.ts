@@ -159,7 +159,9 @@ export async function createVueSFCModule(
     component.css = '/* No <style> tags present */';
   }
   if (clientCode || ssrCode) {
-    const ceStyles = `\n${COMP_IDENTIFIER}.styles = ${JSON.stringify(styles)}`;
+    const ceStyles = styles.length
+      ? `\n${COMP_IDENTIFIER}.styles = ${JSON.stringify(styles)}`
+      : '';
 
     appendSharedCode(
       `\n${COMP_IDENTIFIER}.__file = '${String(id)}'` +
