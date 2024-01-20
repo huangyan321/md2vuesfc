@@ -45,6 +45,6 @@
     "bw": " vite build --watch",
     "b": " vite build",
     "preview": "vite preview",
-    "publish": "pnpm publish"
+    "p": "pnpm publish"
   }
 }
