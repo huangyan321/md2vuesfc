@@ -1,6 +1,6 @@
 {
   "name": "md2vuesfc",
-  "version": "0.3.4",
+  "version": "0.3.5",
   "type": "module",
   "description": "Parse markdown into vue components at runtime",
   "files": [
@@ -42,8 +42,8 @@
   },
   "scripts": {
     "dev": "vite",
-    "bw": " vite build --watch",
-    "b": " vite build",
+    "bw": "vite build --watch",
+    "bd": "vite build && pnpm p",
     "preview": "vite preview",
     "p": "pnpm publish"
   }
