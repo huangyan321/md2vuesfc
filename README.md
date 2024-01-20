@@ -1,18 +1,199 @@
-# Vue 3 + TypeScript + Vite
+# MD2VueSFC
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+A Vue3 component that allows you to **parse markdown at runtime** and **mix vue-sfc into it**. It is **SSR-friendly**, inspired by [markvue](https://github.com/backrunner/markvue) and [vuejs/repl](https://github.com/vuejs/repl).
 
-## Recommended IDE Setup
+## How to use
 
-- [VS Code](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+1: Install the package:
 
-## Type Support For `.vue` Imports in TS
+```js
+npm install md2vuesfc --save
+```
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin) to make the TypeScript language service aware of `.vue` types.
+2: Import it to your project:
 
-If the standalone TypeScript plugin doesn't feel fast enough to you, Volar has also implemented a [Take Over Mode](https://github.com/johnsoncodehk/volar/discussions/471#discussioncomment-1361669) that is more performant. You can enable it by the following steps:
+```js
 
-1. Disable the built-in TypeScript Extension
-   1. Run `Extensions: Show Built-in Extensions` from VSCode's command palette
-   2. Find `TypeScript and JavaScript Language Features`, right click and select `Disable (Workspace)`
-2. Reload the VSCode window by running `Developer: Reload Window` from the command palette.
+import { createApp } from 'vue';
+import App from './App.vue';
+
+import md2vuesfc from 'md2vuesfc';
+
+const app = createApp(App)
+
+app.use(md2vuesfc)
+
+app.mount('#app');
+```
+
+3: Use it in your pages:
+
+create a markdown string:
+
+```ts
+// ./demo.ts
+export const demoContent =
+  `# {{ count }}
+<button @click="add">add</button>
+## Subtitle
+
+Here's some content.
+
+Next is a Vue SFC (counter).
+
+
+<script setup lang="ts">
+import { ref } from 'vue';
+const count = ref(0);
+const add = () => {
+  count.value++
+}
+</script>
+
+## Intro
+
+<style scoped>
+button {
+  padding: 6px 18px;
+  background: #41aeff;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+</style>`
+
+```
+
+use it:
+
+```vue
+
+<script setup lang="ts">
+import { demoContent } from './demo';
+import HelloWorld from './helloworld.vue';
+</script>
+
+<template>
+  <div>
+    <MarkVue
+      :content="demoContent"
+    />
+  </div>
+</template>
+
+```
+
+## advanced usage
+
+### Customize markdown behavior
+
+The component uses markdown-it library internally, you can pass in the markdown-it instance as prop, and before that you can customize its behavior.
+
+```vue
+<!-- @format -->
+
+<script setup lang="ts">
+import { demoContent } from './demo';
+import MarkdownIt from 'markdown-it';
+import HelloWorld from './helloworld.vue';
+import anchor from 'markdown-it-anchor';
+
+const md = MarkdownIt({ html: true }).use(anchor);
+</script>
+
+<template>
+  <div>
+    <MarkVue
+      :markdown-it="md"
+      :content="demoContent"
+    ></MarkVue>
+  </div>
+</template>
+```
+
+### Use vue components inside markdown
+
+You can use components in Markdown like this
+
+```ts
+// ./demo.ts
+export const demoContent =
+  `# {{ count }}
+<button @click="add">add</button>
+<helloworld></helloworld>
+## Subtitle
+
+Here's some content.
+
+Next is a Vue SFC (counter).
+
+
+<script setup>
+import { ref } from 'vue';
+import { helloworld } from 'components'
+const count = ref(0);
+const add = () => {
+  count.value++
+}
+</script>
+
+## Intro
+
+<style scoped>
+button {
+  padding: 6px 18px;
+  background: #41aeff;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+</style>`
+
+```
+
+Pass in the corresponding component as prop
+
+```vue
+<!-- @format -->
+
+<script setup lang="ts">
+import { demoContent } from './demo';
+import HelloWorld from './helloworld.vue';
+</script>
+
+<template>
+  <div>
+    <MarkVue
+      :content="demoContent"
+      :context="{
+        components: {
+          helloworld: HelloWorld,
+        },
+      }"
+    ></MarkVue>
+  </div>
+</template>
+
+```
+
+## Features
+
+Supported SFC Features:
+
+- ts lang
+
+- script
+
+- script setup
+
+- Scoped styles
+
+- SSR
+
+Unsupported SFC Features:
+
+- Style Preprocessors
