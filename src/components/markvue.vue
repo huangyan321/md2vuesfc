@@ -64,9 +64,40 @@ const Comp = defineAsyncComponent((): Promise<Component> => {
   return new Promise((resolve) => {
     const compose = (component: any): Component => {
       const id = component.id;
-      if (!component.success) {
+      try {
+        if (!component.success) {
+          return {
+            render() {
+              return h('div', {
+                innerHTML: component.rendered,
+              });
+            },
+          };
+        }
+        if (!globalCached.__MarkVueModules__[id]) {
+          globalCached.__MarkVueModules__[id] = {};
+        }
+        eval(component.script!);
+        const contextProxy = new Proxy(props.context, {
+          get(target, key, receiver) {
+            if (key === 'vue') {
+              return Vue;
+            }
+            if (key === 'vue/server-renderer') {
+              return serverRenderer;
+            }
+            return Reflect.get(target, key, receiver);
+          },
+        });
+        const scriptRet =
+          globalCached.__MarkVueModules__[id]?.getScript?.(contextProxy) ||
+          null;
+
         return {
-          __scopeId: `data-v-${id}`,
+          ...scriptRet,
+        };
+      } catch {
+        return {
           render() {
             return h('div', {
               innerHTML: component.rendered,
@@ -74,27 +105,6 @@ const Comp = defineAsyncComponent((): Promise<Component> => {
           },
         };
       }
-      if (!globalCached.__MarkVueModules__[id]) {
-        globalCached.__MarkVueModules__[id] = {};
-      }
-      eval(component.script!);
-      const contextProxy = new Proxy(props.context, {
-        get(target, key, receiver) {
-          if (key === 'vue') {
-            return Vue;
-          }
-          if (key === 'vue/server-renderer') {
-            return serverRenderer;
-          }
-          return Reflect.get(target, key, receiver);
-        },
-      });
-      const scriptRet =
-        globalCached.__MarkVueModules__[id]?.getScript?.(contextProxy) || null;
-
-      return {
-        ...scriptRet,
-      };
     };
     parser(globalCached.name, mdi, props.content, !isClient).then(
       ({ rewriteComponent }) => {
