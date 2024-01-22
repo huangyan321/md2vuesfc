@@ -9,7 +9,7 @@
 import * as Vue from 'vue';
 import * as serverRenderer from 'vue/server-renderer';
 
-import { defineAsyncComponent, type Component, h } from 'vue';
+import { defineAsyncComponent, type Component, h, onBeforeUnmount } from 'vue';
 // Vue 的服务端渲染 API 位于 `vue/server-renderer` 路径下
 import { isClient } from '@/utils';
 import { parser } from '@/transform';
@@ -60,6 +60,10 @@ const insertStyles = (component: any) => {
   styleTag.id = `markvue-styles`;
   document.head.appendChild(styleTag);
 };
+onBeforeUnmount(() => {
+  const styleTag = document.getElementById(`markvue-styles`);
+  styleTag && styleTag.remove();
+});
 const Comp = defineAsyncComponent((): Promise<Component> => {
   return new Promise((resolve) => {
     const compose = (component: any): Component => {
