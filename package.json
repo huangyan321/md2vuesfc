@@ -1,6 +1,6 @@
 {
   "name": "md2vuesfc",
-  "version": "0.3.9",
+  "version": "0.3.10",
   "type": "module",
   "description": "Parse markdown into vue components at runtime",
   "files": [
@@ -19,7 +19,7 @@
   "dependencies": {
     "@mdit-vue/plugin-component": "^2.0.0",
     "@mdit-vue/plugin-sfc": "^2.0.0",
-    "@vue/compiler-sfc": "^3.4.14",
+    "@vue/compiler-sfc": "^3.4.15",
     "hash-sum": "^2.0.0",
     "juice": "^10.0.0",
     "markdown-it": "^13.0.2",
