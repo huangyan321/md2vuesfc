@@ -9,7 +9,7 @@ import {
   type SFCDescriptor,
   type SFCTemplateCompileOptions,
   type BindingMetadata,
-} from '@vue/compiler-sfc';
+} from 'vue/compiler-sfc';
 import type { SfcBlock } from './types/md';
 import { transform } from 'sucrase';
 import juice from 'juice';

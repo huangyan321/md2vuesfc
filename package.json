@@ -1,6 +1,6 @@
 {
   "name": "md2vuesfc",
-  "version": "0.3.12",
+  "version": "0.3.13",
   "type": "module",
   "description": "Parse markdown into vue components at runtime",
   "files": [
@@ -16,31 +16,28 @@
       "require": "./dist/md2vuesfc.cjs"
     }
   },
-  "dependencies": {
+  "devDependencies": {
     "@mdit-vue/plugin-component": "^2.0.0",
     "@mdit-vue/plugin-sfc": "^2.0.0",
-    "@vue/compiler-sfc": "3.4.14",
-    "hash-sum": "^2.0.0",
-    "juice": "^10.0.0",
-    "markdown-it": "^13.0.2",
-    "sucrase": "^3.35.0",
-    "vue": "3.4.14"
-  },
-  "devDependencies": {
     "@types/hash-sum": "^1.0.2",
     "@types/markdown-it": "^13.0.7",
     "@types/node": "^20.11.5",
     "@vitejs/plugin-vue": "^4.6.2",
-    "terser": "^5.27.0",
+    "hash-sum": "^2.0.0",
+    "juice": "^10.0.0",
+    "markdown-it": "^13.0.2",
+    "sucrase": "^3.35.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3",
-    "vite": "^5.0.11",
+    "vite": "^5.0.12",
     "vite-plugin-dts": "^3.7.1",
+    "vue": "3.4.14",
     "vue-tsc": "^1.8.27"
   },
   "scripts": {
     "dev": "vite",
     "bw": "vite build --watch",
+    "b": "vite build",
     "bd": "vite build && pnpm p",
     "preview": "vite preview",
     "p": "pnpm publish"

@@ -1,6 +1,5 @@
 /** @format */
 
-import { type Plugin, mergeConfig } from 'vite';
 import { defineConfig } from 'vite';
 import vue from '@vitejs/plugin-vue';
 import { resolve } from 'node:path';
@@ -25,12 +24,12 @@ export default defineConfig({
       // 确保外部化处理那些你不想打包进库的依赖
       external: [
         'vue',
-        '@vue/server-renderer',
         'markdown-it',
         '@mdit-vue/plugin-sfc',
         '@mdit-vue/plugin-component',
         'sucrase',
         'juice',
+        'vue/compiler-sfc',
       ],
     },
   },
