@@ -22,7 +22,7 @@ export default defineConfig({
     },
     rollupOptions: {
       // 确保外部化处理那些你不想打包进库的依赖
-      external: ['vue', 'markdown-it', 'sucrase', 'juice', 'vue/compiler-sfc'],
+      external: ['vue', 'markdown-it', 'sucrase', 'juice'],
     },
   },
   plugins: [
