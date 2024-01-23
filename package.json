@@ -16,17 +16,19 @@
       "require": "./dist/md2vuesfc.cjs"
     }
   },
-  "devDependencies": {
+  "dependencies": {
     "@mdit-vue/plugin-component": "^2.0.0",
     "@mdit-vue/plugin-sfc": "^2.0.0",
+    "hash-sum": "^2.0.0",
+    "juice": "^10.0.0",
+    "markdown-it": "^13.0.2",
+    "sucrase": "^3.35.0"
+  },
+  "devDependencies": {
     "@types/hash-sum": "^1.0.2",
     "@types/markdown-it": "^13.0.7",
     "@types/node": "^20.11.5",
     "@vitejs/plugin-vue": "^4.6.2",
-    "hash-sum": "^2.0.0",
-    "juice": "^10.0.0",
-    "markdown-it": "^13.0.2",
-    "sucrase": "^3.35.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3",
     "vite": "^5.0.12",
