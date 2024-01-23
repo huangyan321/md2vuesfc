@@ -1,6 +1,6 @@
 {
   "name": "md2vuesfc",
-  "version": "0.3.14",
+  "version": "0.3.15",
   "type": "module",
   "description": "Parse markdown into vue components at runtime",
   "files": [
@@ -12,8 +12,7 @@
   "exports": {
     ".": {
       "types": "./dist/md2vuesfc.d.ts",
-      "import": "./dist/md2vuesfc.js",
-      "require": "./dist/md2vuesfc.cjs"
+      "import": "./dist/md2vuesfc.js"
     }
   },
   "dependencies": {

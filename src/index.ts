@@ -9,5 +9,3 @@ export default installer;
 export type { MarkDownEnv } from './types/md';
 export * from './compiler';
 export * from './transform';
-import { default as juice } from 'juice';
-export { juice };
