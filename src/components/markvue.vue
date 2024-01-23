@@ -7,7 +7,6 @@
 </template>
 <script setup lang="ts">
 import * as Vue from 'vue';
-import * as serverRenderer from 'vue/server-renderer';
 
 import { defineAsyncComponent, type Component, h, onBeforeUnmount } from 'vue';
 // Vue 的服务端渲染 API 位于 `vue/server-renderer` 路径下
@@ -87,9 +86,6 @@ const Comp = defineAsyncComponent((): Promise<Component> => {
             if (key === 'vue') {
               return Vue;
             }
-            if (key === 'vue/server-renderer') {
-              return serverRenderer;
-            }
             return Reflect.get(target, key, receiver);
           },
         });
@@ -110,7 +106,7 @@ const Comp = defineAsyncComponent((): Promise<Component> => {
         };
       }
     };
-    parser(globalCached.name, mdi, props.content, !isClient).then(
+    parser(globalCached.name, mdi, props.content, false).then(
       ({ rewriteComponent }) => {
         isClient && insertStyles(rewriteComponent);
         resolve(compose(rewriteComponent));
