@@ -1,6 +1,6 @@
 {
   "name": "md2vuesfc",
-  "version": "0.3.20",
+  "version": "0.3.21",
   "type": "module",
   "description": "Parse markdown into vue components at runtime",
   "files": [
