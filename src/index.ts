@@ -6,6 +6,4 @@ const installer = (app: App): any => {
 };
 export { MarkVue };
 export default installer;
-export type { MarkDownEnv } from './types/md';
-export * from './compiler';
-export * from './transform';
+
