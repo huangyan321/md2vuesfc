@@ -94,6 +94,7 @@ const Comp = defineAsyncComponent((): Promise<Component> => {
           null;
 
         return {
+          __scopeId: `data-v-${id}`,
           ...scriptRet,
         };
       } catch {
@@ -106,7 +107,7 @@ const Comp = defineAsyncComponent((): Promise<Component> => {
         };
       }
     };
-    parser(globalCached.name, mdi, props.content, !isClient).then(
+    parser(globalCached.name, mdi, props.content, false).then(
       ({ rewriteComponent }) => {
         isClient && insertStyles(rewriteComponent);
         resolve(compose(rewriteComponent));
