@@ -37,7 +37,6 @@ export default defineConfig({
         'sucrase',
         '@mdit-vue/plugin-component',
         '@mdit-vue/plugin-sfc',
-        'vue/compiler-sfc',
       ],
     },
   },
