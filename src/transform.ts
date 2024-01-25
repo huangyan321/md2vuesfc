@@ -1,5 +1,5 @@
 /** @format */
-import MarkdownIt from 'markdown-it';
+import type MarkdownIt from 'markdown-it';
 import type { MarkDownEnv } from './types/md';
 
 import { createVueSFCModule } from './compiler';
