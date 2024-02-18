@@ -11,14 +11,6 @@ export default defineConfig({
     // avoid late discovered deps
     include: ['vue/server-renderer'],
   },
-  resolve: {
-    alias: {
-      '@vue/compiler-dom': '@vue/compiler-dom/dist/compiler-dom.cjs.js',
-      '@vue/compiler-core': '@vue/compiler-core/dist/compiler-core.cjs.js',
-      '@': resolve(__dirname, 'src'),
-      test: resolve(__dirname, 'test'),
-    },
-  },
   build: {
     target: 'esnext',
     sourcemap: true,
@@ -32,15 +24,21 @@ export default defineConfig({
       },
       formats: ['es'],
     },
-    commonjsOptions: {
-      ignore: ['typescript'],
-    },
+
     rollupOptions: {
       output: {
         chunkFileNames: 'chunks/[name]-[hash].js',
       },
       // 确保外部化处理那些你不想打包进库的依赖
-      external: ['vue', 'vue/compiler-sfc', 'juice'],
+      external: [
+        'vue',
+        'vue/compiler-sfc',
+        'markdown-it',
+        'juice',
+        'sucrase',
+        '@mdit-vue/plugin-component',
+        '@mdit-vue/plugin-sfc',
+      ],
     },
   },
   plugins: [
@@ -49,4 +47,10 @@ export default defineConfig({
       rollupTypes: true,
     }),
   ],
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+      test: resolve(__dirname, 'test'),
+    },
+  },
 });

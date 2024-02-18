@@ -12,7 +12,7 @@ import {
 } from 'vue/compiler-sfc';
 import type { SfcBlock } from './types/md';
 import { transform } from 'sucrase';
-import juice from 'juice';
+import { inlineContent } from 'juice';
 const COMP_IDENTIFIER = '__sfc__';
 async function transformTS(src: string) {
   return transform(src, {
@@ -184,7 +184,7 @@ function concatModules(sfcBlock: SfcBlock) {
   }, '');
   let t = template.content || '';
   if (c) {
-    t = juice(t + c);
+    t = inlineContent(t, c);
   }
   // 拼接完整的sfc字符串
   const sfc = `${t}\n${s}\n${c}`;
