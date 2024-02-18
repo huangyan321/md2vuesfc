@@ -40,7 +40,7 @@ export default defineConfig({
         chunkFileNames: 'chunks/[name]-[hash].js',
       },
       // 确保外部化处理那些你不想打包进库的依赖
-      external: ['vue', 'vue/compiler-sfc', 'juice', 'sucrase'],
+      external: ['vue', 'vue/compiler-sfc', 'juice'],
     },
   },
   plugins: [
